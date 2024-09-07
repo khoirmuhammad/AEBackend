@@ -1,4 +1,5 @@
 ﻿using AEBackendProject.Common;
+using AEBackendProject.Common.Exceptions;
 using AEBackendProject.DTO.Port;
 using AEBackendProject.DTO.Ship;
 using AEBackendProject.Models;
@@ -100,11 +101,11 @@ namespace AEBackendProject.Services
 
             var ship = await _unitOfWork.ShipRepository.GetByIdAsync(shipId);
             if (ship == null)
-                throw new Exception($"No ship {shipId} found");
+                throw new ItemNotFoundException($"No ship {shipId} found");
 
             var ports = await _unitOfWork.PortRepository.GetAllAsync();
             if (ports == null || !ports.Any())
-                throw new Exception($"No ports found");
+                throw new ItemNotFoundException($"No ports found");
 
             // 1 knot = 1,852 km/hour
             double shipSpeedInHour = ship.Velocity * Constant.Knot;
@@ -146,9 +147,9 @@ namespace AEBackendProject.Services
             return new ClosestPortResultDto
             {
                 Ship = _mapper.Map<ShipDto>(ship),
-                Port = _mapper.Map<PortDto>(closestPort),
-                Distance = distanceDto,
-                Time = timeDto
+                ClosestPort = _mapper.Map<PortDto>(closestPort),
+                ShipPortDistance = distanceDto,
+                EstimationTime = timeDto
             };
         }
 

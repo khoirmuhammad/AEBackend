@@ -7,8 +7,21 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using AEBackendProject.Middleware;
+using Microsoft.Extensions.Configuration;
+using Serilog;
+using AEBackendProject.Common;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Log
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/AEBackendLog.txt")
+    .CreateLogger();
+builder.Host.UseSerilog(); // Use Serilog for logging
 
 // Add services to the container.
 
@@ -26,10 +39,13 @@ builder.Services.AddScoped<PortSeeder>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IShipService, ShipService>();
+builder.Services.AddScoped<IResponseHelper, ResponseHelper>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

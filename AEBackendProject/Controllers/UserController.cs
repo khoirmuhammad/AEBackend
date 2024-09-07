@@ -1,9 +1,14 @@
-﻿using AEBackendProject.DTO.User;
+﻿using AEBackendProject.Common;
+using AEBackendProject.Common.Validators;
+using AEBackendProject.DTO.User;
 using AEBackendProject.Models;
 using AEBackendProject.Services;
 using AutoMapper;
+using Azure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace AEBackendProject.Controllers
 {
@@ -13,54 +18,63 @@ namespace AEBackendProject.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
-        public UserController(IMapper mapper, IUserService userService)
+        private readonly IResponseHelper _responseHelper;
+        public UserController(IMapper mapper, IUserService userService, IResponseHelper responseHelper)
         {
             _mapper = mapper;
             _userService = userService;
+            _responseHelper = responseHelper;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(Guid id)
+        public async Task<IActionResult> GetUserById([FromRoute, Required, NotEmptyGuid] Guid id)
         {
             var user = await _userService.GetByIdAsync(id);
-            var userDto = _mapper.Map<UserDto>(user);
 
-            return user == null ? NotFound() : Ok(userDto);
+            if (user == null)
+                return _responseHelper.CreateNotFoundResponse("User not found");
+
+            var userDto = _mapper.Map<UserDto>(user);
+            return _responseHelper.CreateOkResponse(userDto);
         }
 
-        [HttpGet("GetAllUsers")]
+        [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userService.GetAllAsync();
             var usersDto = _mapper.Map<List<UserDto>>(users);
 
-            return Ok(usersDto);
+            return _responseHelper.CreateOkResponse(usersDto);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserCreateDto request)
         {
-            if (!ModelState.IsValid) 
-                return BadRequest(ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return _responseHelper.CreateBadRequestResponse(errors);
+            }
 
             var user = _mapper.Map<User>(request);
-
             await _userService.CreateAsync(user);
-            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
+
+            return _responseHelper.CreateCreatedResponse(user, user.Id, nameof(UserController), nameof(GetUserById));
         }
 
         [HttpPost("{userId}/assign/{shipId}")]
-        public async Task<IActionResult> AssignShipToUser(Guid userId, Guid shipId)
+        public async Task<IActionResult> AssignShipToUser([FromRoute, Required, NotEmptyGuid] Guid userId, [FromRoute, Required, NotEmptyGuid] Guid shipId)
         {
             await _userService.AssignShipToUser(userId, shipId);
-            return NoContent();
+            return _responseHelper.CreateCustomResponse((int)HttpStatusCode.Created, "Ship successfully assigned to user.");
         }
 
         [HttpPost("{userId}/unassign/{shipId}")]
-        public async Task<IActionResult> UnAssignShipToUser(Guid userId, Guid shipId)
+        public async Task<IActionResult> UnAssignShipToUser([FromRoute, Required, NotEmptyGuid] Guid userId, [FromRoute, Required, NotEmptyGuid] Guid shipId)
         {
             await _userService.UnAssignShipToUser(userId, shipId);
-            return NoContent();
+            return _responseHelper.CreateCustomResponse((int)HttpStatusCode.Created, "Ship successfully unassigned to user.");
         }
 
         //[HttpGet("GetUsers")]

@@ -5,9 +5,9 @@ namespace AEBackendProject.DTO.Port
     public class ClosestPortResultDto
     {
         public ShipDto Ship { get; set; }
-        public PortDto Port {  get; set; }
-        public DistanceDto Distance { get; set; }
-        public TimeDto Time { get; set; }
+        public PortDto ClosestPort {  get; set; }
+        public DistanceDto ShipPortDistance { get; set; }
+        public TimeDto EstimationTime { get; set; }
     }
 
     public class PortDto

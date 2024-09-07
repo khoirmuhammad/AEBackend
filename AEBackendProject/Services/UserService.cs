@@ -1,4 +1,5 @@
-﻿using AEBackendProject.Models;
+﻿using AEBackendProject.Common.Exceptions;
+using AEBackendProject.Models;
 using AEBackendProject.Repositories;
 using System.Linq.Expressions;
 
@@ -16,7 +17,7 @@ namespace AEBackendProject.Services
         {
             IEnumerable<UserShip> userShip = await GetExistingUserShip(userId, shipId);
 
-            if (userShip != null && !userShip.Any())
+            if (!userShip.Any())
             {
                 var newUserShip = new UserShip
                 {
@@ -29,7 +30,7 @@ namespace AEBackendProject.Services
             }
             else
             {
-                throw new Exception("Ship has assigned to user already");
+                throw new ShipAlreadyAssignedException($"Ship with Id {shipId} is already assigned to user with Id {userId}.");
             }
         }
 
@@ -50,10 +51,10 @@ namespace AEBackendProject.Services
             var ship = await _unitOfWork.ShipRepository.GetByIdAsync(shipId);
 
             if (user == null)
-                throw new Exception($"User Id {userId} not found");
+                throw new ItemNotFoundException($"User Id {userId} not found");
 
             if (ship == null)
-                throw new Exception($"Ship Id {shipId} not found");
+                throw new ItemNotFoundException($"Ship Id {shipId} not found");
 
             var userShip = await _unitOfWork.UserShipRepository.GetAsync(n => n.ShipId == shipId && n.UserId == userId);
             return userShip;
