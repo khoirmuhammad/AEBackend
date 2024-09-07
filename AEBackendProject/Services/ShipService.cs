@@ -12,10 +12,12 @@ namespace AEBackendProject.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public ShipService(IMapper mapper, IUnitOfWork unitOfWork)
+        private readonly IConverter _converter;
+        public ShipService(IMapper mapper, IUnitOfWork unitOfWork, IConverter converter)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _converter = converter;
         }
 
         public async Task CreateAsync(Ship ship)
@@ -108,22 +110,22 @@ namespace AEBackendProject.Services
                 throw new ItemNotFoundException($"No ports found");
 
             // 1 knot = 1,852 km/hour
-            double shipSpeedInHour = ship.Velocity * Constant.Knot;
+            double shipSpeedInHour = _converter.GetSpeed(ship.Velocity);
 
             foreach (var port in ports)
             {
                 // Get distance between ship and port location in kilometer
-                double distanceInKm = GetDistanceInKilometer(ship.Latitude, ship.Longitude, port.Latitude, port.Longitude);
+                double distance = _converter.GetDistance(ship.Latitude, ship.Longitude, port.Latitude, port.Longitude);
 
-                // Get time = distance / speed
-                double shipTime = distanceInKm / shipSpeedInHour;
+                // Get time = distance (in KM) / speed
+                double shipTime = distance / shipSpeedInHour;
 
                 portDistanceTimeDtos.Add(new PortDistanceTimeDto
                 {
                     PortName = port.Name,
                     Latitude = port.Latitude,
                     Longitude = port.Longitude,
-                    Distance = distanceInKm,
+                    Distance = distance,
                     Time = shipTime,
                 });
             }
@@ -138,46 +140,14 @@ namespace AEBackendProject.Services
                 Second= time.Seconds,
             };
 
-            DistanceDto distanceDto = new DistanceDto
-            {
-                Kilometer = (int)closestPort.Distance,
-                Meter = (closestPort.Distance - ((int)closestPort.Distance)) * 1000
-            };
-
-            return new ClosestPortResultDto
+            var result = new ClosestPortResultDto
             {
                 Ship = _mapper.Map<ShipDto>(ship),
                 ClosestPort = _mapper.Map<PortDto>(closestPort),
-                ShipPortDistance = distanceDto,
+                ShipPortDistance = _converter.GetDistanceDto(closestPort.Distance),
                 EstimationTime = timeDto
             };
-        }
-
-        //Haversine Formula
-        private double GetDistanceInKilometer (double shipLat, double shipLon, double portLat, double portLon)
-        {
-            // Convert Latitude and Longitude to Radians: Latitude and longitude values need to be converted from degrees to radians before using them in the formula
-            double latShipRad = ToRadians(shipLat);
-            double lonShipRad = ToRadians(shipLon);
-            double latPortRad = ToRadians(portLat);
-            double lonPortRad = ToRadians(portLon);
-
-            // Calculate the Differences: Compute the differences in latitude and longitude between the two points
-            double latitudeDifference = latPortRad - latShipRad;
-            double longitudeDifference = lonPortRad - lonShipRad;
-
-            double centralAnglePart = (Math.Pow(Math.Sin(latitudeDifference / 2), 2)) +
-                                      ((Math.Cos(latShipRad) * Math.Cos(latPortRad)) * Math.Pow(Math.Sin(longitudeDifference / 2), 2));
-
-            double angularDistance = 2 * Math.Atan2(Math.Sqrt(centralAnglePart), Math.Sqrt(1 - centralAnglePart));
-
-            // Return the distance in kilometers
-            return Constant.EarthRadiusKm * angularDistance;
-        }
-
-        private double ToRadians(double degree)
-        {
-            return degree * (Math.PI / 180.0);
+            return result;
         }
     }
 }

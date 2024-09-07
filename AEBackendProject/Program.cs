@@ -40,6 +40,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IShipService, ShipService>();
 builder.Services.AddScoped<IResponseHelper, ResponseHelper>();
+builder.Services.AddScoped<IConverter, ConverterInKm>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 

@@ -109,7 +109,7 @@ namespace AEBackendProject.Controllers
         }
 
         [HttpGet("closest-port")]
-        public async Task<IActionResult> GetClosestPortToShip([FromRoute, Required, NotEmptyGuid] Guid shipId)
+        public async Task<IActionResult> GetClosestPortToShip([FromQuery, Required, NotEmptyGuid] Guid shipId)
         {
             var closestPort = await _shipService.GetClosestPort(shipId);
             if (closestPort == null)

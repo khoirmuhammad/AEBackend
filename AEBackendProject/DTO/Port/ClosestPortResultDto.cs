@@ -19,8 +19,8 @@ namespace AEBackendProject.DTO.Port
 
     public class DistanceDto
     {
-        public double Kilometer { get; set; }
-        public double Meter { get; set; }
+        public string Measure {  get; set; } = string.Empty;
+        public double Distance { get; set; }
     }
 
     public class TimeDto
