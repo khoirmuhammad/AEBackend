@@ -12,7 +12,10 @@ namespace AEBackendProject.Data
 
         public void SeedPorts()
         {
-            var ports = new List<Port>
+            try
+            {
+                // List of ports to seed
+                var ports = new List<Port>
             {
                 new Port { Id = Guid.NewGuid(), Name = "Tanjung Priok", Latitude = -6.1141, Longitude = 106.8456 },
                 new Port { Id = Guid.NewGuid(), Name = "Tanjung Perak", Latitude = -7.2396, Longitude = 112.7354 },
@@ -26,15 +29,26 @@ namespace AEBackendProject.Data
                 new Port { Id = Guid.NewGuid(), Name = "Banjarmasin", Latitude = -3.3167, Longitude = 114.5833 }
             };
 
-            foreach (var port in ports)
-            {
-                if (!_context.Ports.Any(p => p.Name == port.Name))
+                // Fetch existing ports from the database
+                var existingPortNames = _context.Ports
+                    .Select(p => p.Name)
+                    .ToHashSet(); // Using HashSet for O(1) lookups
+
+                var newPorts = ports
+                    .Where(port => !existingPortNames.Contains(port.Name))
+                    .ToList();
+
+                if (newPorts.Any())
                 {
-                    _context.Ports.Add(port);
+                    _context.Ports.AddRange(newPorts);
+                    _context.SaveChanges();
                 }
             }
-
-            _context.SaveChanges();
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while seeding ports: {ex.Message}");
+                throw;
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35219.272
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AEBackendProject", "AEBackendProject\AEBackendProject.csproj", "{8CC46F0D-CFBA-487D-86DF-E8A054027AB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AEBackendProject.Test", "AEBackendProject.Test\AEBackendProject.Test.csproj", "{4B1B1DDE-93BA-4938-98DF-DA52B521B140}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AEBackendProject.Test", "AEBackendProject.Test\AEBackendProject.Test.csproj", "{4B1B1DDE-93BA-4938-98DF-DA52B521B140}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
