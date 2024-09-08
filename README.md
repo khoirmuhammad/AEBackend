@@ -50,66 +50,94 @@ dotnet run
 # API Endpoint
 
 ## User Management
-1. Find user based on specifict primary key / id
-* GET /api/User/{id} 
 
-2. Retrieve all users
-* GET /api/User
-
-3. Create or register new user
-* POST /api/User
-* Request Body
-```javascript
-    {
-	  "name": "string",
-	  "role": "string"
-	}
+* Find user based on specifict primary key / id
+```
+GET /api/User/{id}
 ```
 
-4. Assign user to specific ship
-* POST /api/User/{userId}/assign/{shipId}  (No request body)
+* Retrieve all users
+```
+GET /api/User
+```
 
-5. Unassign user to specific ship
-* POST /api/User/{userId}/unassign/{shipId} (No request body)
+* Create or register new user
+```
+POST /api/User
+```
+Request Body
+  ```javascript
+      {
+  	  "name": "string",
+  	  "role": "string"
+  	}
+  ```
+
+* Assign user to specific ship
+```
+POST /api/User/{userId}/assign/{shipId}  (No request body)
+```
+
+* Unassign user to specific ship
+```
+POST /api/User/{userId}/unassign/{shipId} (No request body)
+```
 
 
 ## Ship Management
-1. Find ship by primary key or id
-* GET /api/Ship/{id}
-
-2. Retrieve all ships
-* GET /api/Ship
-
-3. Create or register new ship
-* POST /api/Ship
-* Request Body
-```javascript
-    {
-	  "name": "string",
-	  "latitude": 0,
-	  "longitude": 0,
-	  "velocity": 0
-	}
+* Find ship by primary key or id
+```
+GET /api/Ship/{id}
 ```
 
-4. Update velocity of specific ship
-* PACTH /api/Ship/{id}/Velocity
-* Request body
+* Retrieve all ships
 ```
-25.0
+GET /api/Ship
 ```
 
-5. Retrieve all mapped ships of a particular user
-* GET /api/Ship/assigned/{userId}
+* Create or register new ship
+```
+POST /api/Ship
+```
+  Request Body
+  ```javascript
+      {
+  	  "name": "string",
+  	  "latitude": 0,
+  	  "longitude": 0,
+  	  "velocity": 0
+  	}
+  ```
 
-6. Retrieve all ships that are not mapped to a user
-* GET /api/Ship/unassigned
+* Update velocity of specific ship
+  ```
+  PACTH /api/Ship/{id}/Velocity
+  ```
+Request body
+  ```
+  25.0
+  ```
 
-7. Find closest port to a ship
-* GET /api/Ship/closest-port?shipId=
+* Retrieve all mapped ships of a particular user
+```
+GET /api/Ship/assigned/{userId}
+```
+
+* Retrieve all ships that are not mapped to a user
+```
+GET /api/Ship/unassigned
+```
+
+* Find closest port to a ship
+```
+GET /api/Ship/closest-port?shipId=
+```
 
 # Testing
-If you are using terminal, go to solution directory and exec: dotnet test
+If you are using terminal, go to solution directory and exec: 
+```
+dotnet test
+```
 
 # Seeding Data
 We add data seeder in startup/program.cs. So, once the application is running, the PortSeeder will be executed. (Note: if the data have exists then system won't be created again)
@@ -132,5 +160,3 @@ For detailed API usage and examples, refer to the Swagger documentation generate
 
 # Contact
 For any questions or feedback, please contact khoirudi16@gmail.com or mk.muhammadkhoirudin@gmail.com
-
-
