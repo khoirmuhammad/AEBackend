@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Getting Started with AE Backend Service (NET Core)
 AEBackend is a backend solution developed using ASP.NET Core that manages users, ships, and ports. It provides RESTful APIs to handle user and ship management, and calculates the closest port to a given ship along with the estimated arrival time based on velocity and geolocation.
 
 ## Features
@@ -35,10 +35,12 @@ git clone https://github.com/khoirmuhammad/AEBackend.git
 cd AEBackendSolution
 ```
 
-2. Restore Dependencies
+2. Restore Dependencies (using terminal)
+```
 dotnet restore
+```
 
-3. Migration
+4. Migration
 * using terminal
 ```
 dotnet ef migrations add InitialCreate
