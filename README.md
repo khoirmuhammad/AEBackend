@@ -30,22 +30,30 @@ AEBackend is a backend solution developed using ASP.NET Core that manages users,
 
 # Instalation
 1. Clone repository
-git clone https://github.com/yourusername/AEBackendSolution.git
+```
+git clone https://github.com/khoirmuhammad/AEBackend.git
 cd AEBackendSolution
+```
 
 2. Restore Dependencies
 dotnet restore
 
 3. Migration
 * using terminal
+```
 dotnet ef migrations add InitialCreate
 dotnet ef database update
+```
 * using Nuget Package Manager (Visual Studio)
+```
 Add-Migration InitialCreate
 Update-Database
+```
 
 4. Run Application (click on running icon in visual studio or if using terminal, we can type:)
+```
 dotnet run
+```
 
 # API Endpoint
 
