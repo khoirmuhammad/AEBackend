@@ -1,0 +1,43 @@
+name: AE BACKEND SERVRVICE Pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+
+      - name: Restore dependencies
+        run: dotnet restore AEBackendProject/AEBackendProject.csproj
+
+      - name: Build AEBackendProject
+        run: dotnet build AEBackendProject/AEBackendProject.csproj --configuration Release
+
+      - name: Build AEBackendProject.Test
+        run: dotnet build AEBackendProject.Test/AEBackendProject.Test.csproj --configuration Release
+
+      - name: Run tests
+        run: dotnet test AEBackendProject.Test/AEBackendProject.Test.csproj --no-build --verbosity normal
+
+      - name: Publish AEBackendProject
+        run: dotnet publish AEBackendProject/AEBackendProject.csproj --configuration Release --output ./publish
+
+      - name: Deploy to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_APP_NAME }}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
